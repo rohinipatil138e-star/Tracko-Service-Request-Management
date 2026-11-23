@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Service Request Management</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<style>
+body{
+    background:#eef3ff;
+    font-family:'Segoe UI',sans-serif;
+}
+
+.header{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+}
+
+.card-box{
+    border:none;
+    border-radius:18px;
+    box-shadow:0 8px 18px rgba(0,0,0,.10);
+}
+
+.table th{
+    background:#0d6efd;
+    color:white;
+}
+
+.badge{
+    padding:8px 14px;
+    border-radius:20px;
+}
+
+.form-control,.btn{
+    border-radius:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="header d-flex justify-content-between align-items-center">
+
+        <div>
+            <h2><i class="fa-solid fa-screwdriver-wrench"></i> Service Request Management</h2>
+            <p class="mb-0">Tracko Field Engineer Management</p>
+        </div>
+
+        <a href="/" class="btn btn-light">Dashboard</a>
+
+    </div>
+
+    <!-- Create Request -->
+    <div class="card card-box mt-4">
+
+        <div class="card-header bg-white">
+            <h4>Create New Request</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form th:action="@{/service-requests/save}" method="post">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <input type="text"
+                               name="customerName"
+                               class="form-control"
+                               placeholder="Customer Name"
+                               required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="text"
+                               name="issue"
+                               class="form-control"
+                               placeholder="Issue (WiFi, AC, Mobile, CCTV...)"
+                               required>
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-primary">
+                            <i class="fa-solid fa-plus"></i>
+                            Create Request
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Request Table -->
+    <div class="card card-box mt-4">
+
+        <div class="card-header bg-white">
+            <h4>All Service Requests</h4>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Issue</th>
+                    <th>Engineer</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="req:${requests}">
+
+                    <td th:text="${req.id}"></td>
+
+                    <td th:text="${req.customerName}"></td>
+
+                    <td>
+                        <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                        <span th:text="${req.issue}"></span>
+                    </td>
+
+                    <td>
+                        <span th:if="${req.engineer!=null}" th:text="${req.engineer.name}"></span>
+                        <span th:if="${req.engineer==null}" class="text-muted">Not Assigned</span>
+                    </td>
+
+                    <td>
+                        <span th:if="${req.status=='Pending'}" class="badge bg-warning text-dark">Pending</span>
+                        <span th:if="${req.status=='Assigned'}" class="badge bg-primary">Assigned</span>
+                        <span th:if="${req.status=='Completed'}" class="badge bg-success">Completed</span>
+                    </td>
+
+                    <td>
+
+                        <a th:if="${req.status=='Pending'}"
+                           th:href="@{'/assign/'+${req.id}}"
+                           class="btn btn-primary btn-sm">
+                            Assign
+                        </a>
+
+                        <a th:if="${req.status=='Assigned'}"
+                           th:href="@{'/complete/'+${req.id}}"
+                           class="btn btn-success btn-sm">
+                            Complete
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
